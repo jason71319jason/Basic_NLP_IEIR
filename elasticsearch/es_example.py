@@ -1,6 +1,8 @@
 from elasticsearch import Elasticsearch, helpers
 import os
 import json
+import sys
+import pprint
 
 SRC_DIR = '../data/law'
 INDEX_NAME = '104_hackathon_qa'
@@ -45,12 +47,20 @@ def query(text, num=5):
     }
     es = Elasticsearch()
     result = es.search(index=INDEX_NAME, doc_type=DOC_TYPE, body=query_mapping)
-    # print(result['hits'])
+
     for r in result['hits']['hits']:
-        print('score: {0}, source:{1}'.format(['_score'], str(r['_source'])))
+        pprint('score: {0}, source:{1}'.format(
+            r['_score'], str(r['_source'])))
 
 
 def delete(index):
     es = Elasticsearch()
     if es.indices.exists(index):
         es.indices.delete(index)
+
+
+if __name__ == '__main__':
+    if sys.argv[1] == 'q':
+        query(sys.argv[2])
+    else:
+        load()
